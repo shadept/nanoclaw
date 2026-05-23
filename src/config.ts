@@ -6,7 +6,15 @@ import { getContainerImageBase, getDefaultContainerImage, getInstallSlug } from 
 import { isValidTimezone } from './timezone.js';
 
 // Read config values from .env (falls back to process.env).
-const envConfig = readEnvFile(['ASSISTANT_NAME', 'ASSISTANT_HAS_OWN_NUMBER', 'CONTAINER_RUNTIME', 'CONTAINER_HOST_NETWORK', 'ONECLI_URL', 'ONECLI_API_KEY', 'TZ']);
+const envConfig = readEnvFile([
+  'ASSISTANT_NAME',
+  'ASSISTANT_HAS_OWN_NUMBER',
+  'CONTAINER_RUNTIME',
+  'CONTAINER_HOST_NETWORK',
+  'ONECLI_URL',
+  'ONECLI_API_KEY',
+  'TZ',
+]);
 
 export const ASSISTANT_NAME = process.env.ASSISTANT_NAME || envConfig.ASSISTANT_NAME || 'Andy';
 export const ASSISTANT_HAS_OWN_NUMBER =
@@ -36,7 +44,8 @@ export const CONTAINER_INSTALL_LABEL = `nanoclaw-install=${INSTALL_SLUG}`;
 export const CONTAINER_RUNTIME = process.env.CONTAINER_RUNTIME || envConfig.CONTAINER_RUNTIME || 'docker';
 // When true, spawn containers with --network=host so they reach the host via
 // 127.0.0.1 (nerdctl/k3s installs without Docker's host-gateway support).
-export const CONTAINER_HOST_NETWORK = (process.env.CONTAINER_HOST_NETWORK || envConfig.CONTAINER_HOST_NETWORK) === 'true';
+export const CONTAINER_HOST_NETWORK =
+  (process.env.CONTAINER_HOST_NETWORK || envConfig.CONTAINER_HOST_NETWORK) === 'true';
 export const CONTAINER_TIMEOUT = parseInt(process.env.CONTAINER_TIMEOUT || '1800000', 10);
 export const CONTAINER_MAX_OUTPUT_SIZE = parseInt(process.env.CONTAINER_MAX_OUTPUT_SIZE || '10485760', 10); // 10MB default
 export const ONECLI_URL = process.env.ONECLI_URL || envConfig.ONECLI_URL;

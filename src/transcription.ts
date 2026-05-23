@@ -16,10 +16,7 @@ export function transcriptionConfigured(): boolean {
   return Boolean(GROQ_API_KEY);
 }
 
-export async function transcribeBuffer(
-  data: Buffer,
-  mimeType: string,
-): Promise<string | null> {
+export async function transcribeBuffer(data: Buffer, mimeType: string): Promise<string | null> {
   if (!GROQ_API_KEY) return null;
 
   // Normalize Telegram's audio/oga → ogg, etc. Groq accepts the common ones.
