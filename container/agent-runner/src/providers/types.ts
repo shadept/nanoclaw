@@ -25,6 +25,8 @@ export interface ProviderOptions {
   mcpServers?: Record<string, McpServerConfig>;
   env?: Record<string, string | undefined>;
   additionalDirectories?: string[];
+  /** Model ID. Provider-specific. When unset, the provider uses its own default. */
+  model?: string;
 }
 
 export interface QueryInput {

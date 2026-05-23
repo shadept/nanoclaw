@@ -239,6 +239,9 @@ function formatAttachments(attachments: any[] | undefined): string {
     const type = a.type || 'file';
     const localPath = a.localPath ? `/workspace/${a.localPath}` : '';
     const url = a.url || '';
+    if (typeof a.transcript === 'string' && a.transcript) {
+      return `[Voice: ${escapeXml(a.transcript)}]`;
+    }
     if (localPath) {
       return `[${type}: ${escapeXml(name)} — saved to ${escapeXml(localPath)}]`;
     }

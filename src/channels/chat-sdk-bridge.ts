@@ -20,6 +20,7 @@ import {
 } from 'chat';
 import { log } from '../log.js';
 import { SqliteStateAdapter } from '../state-sqlite.js';
+import { transcribeBuffer, transcriptionConfigured } from '../transcription.js';
 import { registerWebhookAdapter } from '../webhook-server.js';
 import { getAskQuestionRender } from '../db/sessions.js';
 import { normalizeOptions, type NormalizedOption } from './ask-question.js';
@@ -152,6 +153,13 @@ export function createChatSdkBridge(config: ChatSdkBridgeConfig): ChannelAdapter
           try {
             const buffer = await att.fetchData();
             entry.data = buffer.toString('base64');
+            // Transcribe voice / audio attachments inline so the agent receives
+            // the message as text. Falls back to raw audio when GROQ_API_KEY is
+            // unset or the API call fails.
+            if (att.type === 'audio' && transcriptionConfigured()) {
+              const transcript = await transcribeBuffer(buffer, att.mimeType || 'audio/ogg');
+              if (transcript) entry.transcript = transcript;
+            }
           } catch (err) {
             log.warn('Failed to download attachment', { type: att.type, err });
           }

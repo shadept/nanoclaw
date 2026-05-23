@@ -16,6 +16,7 @@
  * `src/modules/self-mod/` in PR #7 — they now register delivery actions
  * + approval handlers via this module's public API.
  */
+import { ONECLI_URL } from '../../config.js';
 import { onDeliveryAdapterReady } from '../../delivery.js';
 import { registerResponseHandler, onShutdown } from '../../response-registry.js';
 import { handleApprovalsResponse } from './response-handler.js';
@@ -27,10 +28,14 @@ export type { ApprovalHandler, ApprovalHandlerContext, RequestApprovalOptions } 
 
 registerResponseHandler(handleApprovalsResponse);
 
-onDeliveryAdapterReady((adapter) => {
-  startOneCLIApprovalHandler(adapter);
-});
+// OneCLI approvals only run when the OneCLI gateway is configured. Installs
+// using the native credential proxy instead leave ONECLI_URL unset.
+if (ONECLI_URL) {
+  onDeliveryAdapterReady((adapter) => {
+    startOneCLIApprovalHandler(adapter);
+  });
 
-onShutdown(() => {
-  stopOneCLIApprovalHandler();
-});
+  onShutdown(() => {
+    stopOneCLIApprovalHandler();
+  });
+}

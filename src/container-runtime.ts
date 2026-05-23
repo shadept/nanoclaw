@@ -5,15 +5,23 @@
 import { execSync } from 'child_process';
 import os from 'os';
 
-import { CONTAINER_INSTALL_LABEL } from './config.js';
+import { CONTAINER_HOST_NETWORK, CONTAINER_INSTALL_LABEL, CONTAINER_RUNTIME } from './config.js';
 import { log } from './log.js';
 
-/** The container runtime binary name. */
-export const CONTAINER_RUNTIME_BIN = 'docker';
+/** The container runtime binary name. Override via .env CONTAINER_RUNTIME
+ * (e.g. './bin/nanoclaw-ctr' to use a nerdctl/k3s containerd wrapper).
+ */
+export const CONTAINER_RUNTIME_BIN = CONTAINER_RUNTIME;
 
-/** CLI args needed for the container to resolve the host gateway. */
+/** CLI args needed for the container to resolve the host gateway.
+ * When CONTAINER_HOST_NETWORK=true, share the host network namespace so the
+ * container reaches the host via 127.0.0.1 (used by nerdctl/k3s installs
+ * where Docker's --add-host=host-gateway feature isn't available).
+ */
 export function hostGatewayArgs(): string[] {
-  // On Linux, host.docker.internal isn't built-in — add it explicitly
+  if (CONTAINER_HOST_NETWORK) {
+    return ['--network=host'];
+  }
   if (os.platform() === 'linux') {
     return ['--add-host=host.docker.internal:host-gateway'];
   }
