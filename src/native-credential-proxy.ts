@@ -39,9 +39,18 @@ export const NATIVE_CREDENTIAL_VARS = [
   'ANTHROPIC_BASE_URL',
 ] as const;
 
-/** Is the native `.env` credential opt-out enabled? */
+/**
+ * Is the native `.env` credential opt-out enabled?
+ *
+ * Checks `process.env` first (set when the host loader exports `.env` into the
+ * process), then falls back to reading `.env` directly via `readEnvFile`. The
+ * fallback matters when the host service has no `EnvironmentFile=` pointing at
+ * `.env` (the default for systemd setups), in which case `process.env` is bare
+ * but the flag still lives in `.env` next to the credential.
+ */
 export function nativeCredentialsEnabled(): boolean {
-  return process.env[NATIVE_CREDENTIALS_FLAG] === 'true';
+  if (process.env[NATIVE_CREDENTIALS_FLAG] === 'true') return true;
+  return readEnvFile([NATIVE_CREDENTIALS_FLAG])[NATIVE_CREDENTIALS_FLAG] === 'true';
 }
 
 /**
